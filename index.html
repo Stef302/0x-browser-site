@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>0x-Browser - Navigateur Rapide et Sécurisé</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link rel="icon" type="image/png" href="icon.png" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #F4DD23;
+            --primary-light: #D5FF33;
+            --primary-lighter: #DDFF66;
+            --primary-dark: #A3CC00;
+            --primary-darker: #799900;
+            --primary-glow: rgba(244, 221, 35, 0.5);
+            --bg-dark: #121212;
+            --bg-darker: #0a0a0a;
+            --bg-darkest: #050505;
+            --text-light: #f0f0f0;
+            --text-dim: #a0a0a0;
+            --text-bright: #ffffff;
+            --border-color: rgba(244, 221, 35, 0.3);
+            --gold-glow: 0 0 10px rgba(244, 221, 35, 0.3), 0 0 20px rgba(244, 221, 35, 0.2);
+            --gold-glow-strong: 0 0 15px rgba(244, 221, 35, 0.5), 0 0 30px rgba(244, 221, 35, 0.3);
+        }
+
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background-color: var(--bg-darkest);
+            color: var(--text-bright);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(244, 221, 35, 0.08), transparent 35%),
+                radial-gradient(circle at 80% 20%, rgba(244, 221, 35, 0.05), transparent 40%),
+                radial-gradient(circle at 50% 80%, rgba(244, 221, 35, 0.07), transparent 45%),
+                radial-gradient(circle at bottom right, rgba(244, 221, 35, 0.08), rgba(30, 30, 30, 0.9) 60%, rgba(10, 10, 10, 0.98));
+            pointer-events: none;
+            z-index: -2;
+            animation: subtle-pulse 20s infinite alternate ease-in-out;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(244, 221, 35, 0.02) 1px, transparent 1px), 
+                linear-gradient(90deg, rgba(244, 221, 35, 0.02) 1px, transparent 1px),
+                linear-gradient(transparent 50%, rgba(0, 0, 0, 0.05) 50%);
+            background-size: 30px 30px, 30px 30px, 100% 2px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes subtle-pulse {
+            0% { opacity: 0.8; filter: hue-rotate(0deg); }
+            50% { opacity: 1; filter: hue-rotate(5deg); }
+            100% { opacity: 0.9; filter: hue-rotate(0deg); }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes glow-pulse {
+            0%, 100% { box-shadow: var(--gold-glow); }
+            50% { box-shadow: var(--gold-glow-strong); }
+        }
+
+        @keyframes lightning-flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+            75% { opacity: 1; }
+            85% { opacity: 0.9; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        
+.logo-icon-img {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    border-radius: 12px;
+    background: var(--primary);
+    padding: 6px;
+    box-shadow: var(--gold-glow);
+}
+
+
+        /* Header */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid var(--primary);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), 0 0 15px var(--primary-glow);
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: var(--text-bright);
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            animation: glow-pulse 2s infinite;
+        }
+
+        .logo-icon::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 70%;
+            height: 70%;
+            background: var(--bg-darkest);
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            transform: translate(-50%, -50%) rotate(90deg);
+            animation: lightning-flicker 3s infinite;
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        
+        .nav-link {
+            color: var(--text-light);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(244, 221, 35, 0.07);
+            border-radius: 8px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+            text-shadow: 0 0 5px var(--primary-glow);
+        }
+
+        .nav-link:hover::before {
+            opacity: 1;
+        }
+
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 4rem 0;
+            position: relative;
+        }
+
+        .hero-content {
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 8vw, 6rem);
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, var(--primary), var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px var(--primary-glow);
+            animation: glow-pulse 3s infinite;
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .typing-text {
+            overflow: hidden;
+            border-right: 3px solid var(--primary);
+            white-space: nowrap;
+            animation: typing 4s steps(40, end), blink 0.75s step-end infinite;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary), var(--primary-light));
+            color: var(--bg-darkest);
+            box-shadow: 0 8px 25px rgba(244, 221, 35, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(244, 221, 35, 0.6);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: var(--bg-darkest);
+            transform: translateY(-3px);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 5rem 0;
+            background: rgba(18, 18, 18, 0.5);
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            color: var(--primary);
+            text-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: rgba(20, 20, 20, 0.8);
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, var(--primary-glow), transparent);
+            transition: left 0.8s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 40px rgba(244, 221, 35, 0.2);
+        }
+
+        .feature-card:hover::before {
+            left: 100%;
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .feature-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-bright);
+        }
+
+        .feature-desc {
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+
+        /* Download Section */
+        .download {
+            padding: 5rem 0;
+            background: rgba(10, 10, 10, 0.8);
+        }
+
+        .download-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .download-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            color: var(--primary);
+            text-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        .download-desc {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            margin-bottom: 3rem;
+        }
+
+        .download-card {
+            background: rgba(20, 20, 20, 0.9);
+            border: 2px solid var(--primary);
+            border-radius: 20px;
+            padding: 3rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .download-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, var(--primary-glow), transparent);
+            animation: rotate 4s linear infinite;
+            z-index: 1;
+        }
+
+        .download-card::after {
+            content: '';
+            position: absolute;
+            inset: 2px;
+            background: rgba(20, 20, 20, 0.9);
+            border-radius: 18px;
+            z-index: 2;
+        }
+
+        .download-inner {
+            position: relative;
+            z-index: 3;
+        }
+
+        .version-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .version-badge {
+            background: var(--primary);
+            color: var(--bg-darkest);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .file-size {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+
+        .download-btn {
+            width: 100%;
+            padding: 1.5rem;
+            font-size: 1.2rem;
+            background: linear-gradient(45deg, var(--primary), var(--primary-light));
+            color: var(--bg-darkest);
+            border: none;
+            border-radius: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .download-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(244, 221, 35, 0.4);
+        }
+
+        .download-btn:hover::before {
+            left: 100%;
+        }
+
+        /* Versions Section */
+        .versions {
+            padding: 5rem 0;
+            background: rgba(15, 15, 15, 0.7);
+        }
+
+        .versions-list {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .version-item {
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .version-item:hover {
+            border-color: var(--primary);
+            box-shadow: 0 5px 15px rgba(244, 221, 35, 0.2);
+        }
+
+        .version-number {
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .version-date {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+
+        .version-status {
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-current {
+            background: var(--primary);
+            color: var(--bg-darkest);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--bg-darker);
+            border-top: 2px solid var(--primary);
+            padding: 3rem 0;
+            text-align: center;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .footer-section p,
+        .footer-section a {
+            color: var(--text-light);
+            text-decoration: none;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .footer-section a:hover {
+            color: var(--primary);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--border-color);
+            padding-top: 2rem;
+            color: var(--text-dim);
+        }
+
+        
+.presentation-gallery {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.presentation-img {
+    border-radius: 12px;
+    max-width: 300px;
+    width: 100%;
+    height: auto; /* Garde le ratio d'aspect */
+    object-fit: contain; /* Empêche la compression et conserve les proportions */
+    border: 2px solid var(--border-color);
+    box-shadow: 0 0 15px rgba(244, 221, 35, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.presentation-img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 25px var(--primary-glow);
+}
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+
+            .hero-title {
+                font-size: 3rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .version-info {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        /* Animations on scroll */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .animate-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="#" class="logo">
+                    <img src="icon.png" alt="Logo" class="logo-icon-img">
+                    <span class="logo-text">0x-Browser</span>
+                </a>
+                <nav>
+                    <ul class="nav-menu">
+                        <li><a href="#home" class="nav-link">Accueil</a></li>
+                        <li><a href="#features" class="nav-link">Fonctionnalités</a></li>
+                        <li><a href="#download" class="nav-link">Télécharger</a></li>
+                        <li><a href="#versions" class="nav-link">Versions</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">0x-Browser</h1>
+                <p class="hero-subtitle typing-text">Naviguer librement sur le web avec notre navigateur rapide, sécurisé et respectueux de votre vie privée.</p>
+                <div class="cta-buttons">
+                    <a href="#download" class="btn btn-primary">
+                        <i class="fas fa-download"></i>
+                        Télécharger Maintenant
+                    </a>
+                    <a href="#features" class="btn btn-secondary">
+                        <i class="fas fa-info-circle"></i>
+                        En Savoir Plus
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <h2 class="section-title animate-on-scroll">Fonctionnalités Avancées</h2>
+            <div class="features-grid">
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3 class="feature-title">Vitesse Éclair</h3>
+                    <p class="feature-desc">Moteur de rendu ultra-rapide optimisé pour des performances exceptionnelles sur tous les sites web.</p>
+                </div>
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="feature-title">Sécurité Renforcée</h3>
+                    <p class="feature-desc">Protection avancée contre les malwares, phishing et tracking avec chiffrement de bout en bout.</p>
+                </div>
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">
+                        <i class="fas fa-user-secret"></i>
+                    </div>
+                    <h3 class="feature-title">Vie Privée</h3>
+                    <p class="feature-desc">Aucune collecte de données, navigation anonyme et blocage automatique des trackers.</p>
+                </div>
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <h3 class="feature-title">Personnalisation</h3>
+                    <p class="feature-desc">Interface entièrement personnalisable avec thèmes, extensions et raccourcis configurables.</p>
+                </div>
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3 class="feature-title">Multi-Plateforme</h3>
+                    <p class="feature-desc">Disponible sur Windows, (macOS, Linux, iOS et Android) avec synchronisation cloud.</p>
+                </div>
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3 class="feature-title">Open Source</h3>
+                    <p class="feature-desc">Code source ouvert, auditable et contributif pour une transparence totale.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Download Section -->
+    <section id="download" class="download">
+        <div class="container">
+            <div class="download-content animate-on-scroll">
+                <h2 class="download-title">Télécharger 0x-Browser</h2>
+                <p class="download-desc">Profitez d'une expérience de navigation fluide sans limites. Téléchargement gratuit et installation simple.</p>
+                
+                <div class="download-card">
+                    <div class="download-inner">
+                        <div class="version-info">
+                            <div>
+                                <span class="version-badge">Version 1.0.0</span>
+                                <div class="version-date">Sortie: Juillet 2025</div>
+                            </div>
+                            <div class="file-size">Taille: 456 Mo KB</div>
+                        </div>
+                        <button class="download-btn" onclick="downloadFile()">
+                            <i class="fas fa-download"></i>
+                            Télécharger pour Windows
+                        </button>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 2rem;">
+                    <p style="color: var(--text-dim); font-size: 0.9rem;">
+                        <i class="fas fa-info-circle"></i>
+                        Compatible avec Windows 10/11 (macOS 10.14+, Ubuntu 18.04+ plus tard)
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    
+    <!-- Presentation Section -->
+    <section id="presentation" class="presentation">
+        <div class="container">
+            <h2 class="section-title animate-on-scroll">Présentation</h2>
+            <div class="presentation-gallery">
+                <img src="img1.jpg" alt="Interface 1" class="presentation-img animate-on-scroll">
+                <img src="img2.jpg" alt="Interface 2" class="presentation-img animate-on-scroll">
+                <img src="img3.jpg" alt="Interface 3" class="presentation-img animate-on-scroll">
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Versions Section -->
+    <section id="versions" class="versions">
+        <div class="container">
+            <h2 class="section-title animate-on-scroll">Historique des Versions</h2>
+            <div class="versions-list animate-on-scroll">
+                <div class="version-item">
+                    <div>
+                        <div class="version-number">v1.0.0</div>
+                        <div class="version-date">15 Juillet 2025</div>
+                    </div>
+                    <div class="version-status status-current">Actuelle</div>
+                </div>
+                <div class="version-item" style="opacity: 0.6;">
+                    <div>
+                        <div class="version-number">v0.9.5 Beta</div>
+                        <div class="version-date">5 Avril 2025</div>
+                    </div>
+                    <div class="version-status" style="background: var(--text-dim); color: var(--bg-darkest);">Beta</div>
+                </div>
+                <div class="version-item" style="opacity: 0.4;">
+                    <div>
+                        <div class="version-number">v0.9.0 Alpha</div>
+                        <div class="version-date">12 décembre 2024</div>
+                    </div>
+                    <div class="version-status" style="background: var(--text-dim); color: var(--bg-darkest);">Alpha</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>0x-Browser</h3>
+                    <p>Le navigateur web nouvelle génération qui respecte votre vie privée et vous offre une expérience de navigation exceptionnelle.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Liens Utiles</h3>
+                    <a href="#presentation">Présentation</a>
+                    <a href="#features">Fonctionnalités</a>
+                    <a href="#download">Télécharger</a>
+                    <a href="#versions">Versions</a>
+                    <a href="#">Documentation</a>
+                </div>
+                <div class="footer-section">
+                    <h3>Support</h3>
+                    <a href="#">Centre d'aide</a>
+                    <a href="#">Communauté</a>
+                    <a href="#">Signaler un bug</a>
+                    <a href="#">Contact</a>
+                </div>
+                <div class="footer-section">
+                    <h3>Développeurs</h3>
+                    <a href="#">GitHub</a>
+                    <a href="#">API</a>
+                    <a href="#">Extensions</a>
+                    <a href="#">Contribuer</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 0x-Browser. Tous droits réservés. | Navigateur open source développé avec ❤️</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scroll for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Animate elements on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.animate-on-scroll').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Add stagger animation to feature cards
+        const featureCards = document.querySelectorAll('.feature-card');
+        featureCards.forEach((card, index) => {
+            card.style.animationDelay = `${index * 0.2}s`;
+        });
+
+        // Download functionality
+        function downloadFile() {
+            const downloadBtn = document.querySelector('.download-btn');
+            const originalText = downloadBtn.innerHTML;
+            
+            // Show downloading state
+            downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Téléchargement...';
+            downloadBtn.disabled = true;
+            
+            // Simulate download process
+            setTimeout(() => {
+                // Create a temporary download link for the test file
+                const link = document.createElement('a');
+                link.href = 'https://github.com/Stef302/APD/releases/download/app/0x-browser.Setup.1.0.0.exe';
+                link.download = 'https://github.com/Stef302/APD/releases/download/app/0x-browser.Setup.1.0.0.exe';
+                link.click();
+                
+                // Reset button
+                downloadBtn.innerHTML = '<i class="fas fa-check"></i> Téléchargé !';
+                downloadBtn.style.background = 'linear-gradient(45deg, #4CAF50, #66BB6A)';
+                
+                setTimeout(() => {
+                    downloadBtn.innerHTML = originalText;
+                    downloadBtn.disabled = false;
+                    downloadBtn.style.background = '';
+                }, 2000);
+            }, 1500);
+        }
+
+        // Add particle effects
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.style.position = 'fixed';
+            particle.style.width = '2px';
+            particle.style.height = '2px';
+            particle.style.background = 'var(--primary)';
+            particle.style.borderRadius = '50%';
+            particle.style.pointerEvents = 'none';
+            particle.style.opacity = '0.7';
+            particle.style.zIndex = '1';
+            
+            particle.style.left = Math.random() * window.innerWidth + 'px';
+            particle.style.top = window.innerHeight + 'px';
+            
+            document.body.appendChild(particle);
+            
+            const animation = particle.animate([
+                { transform: 'translateY(0px)', opacity: 0.7 },
+                { transform: `translateY(-${window.innerHeight + 100}px)`, opacity: 0 }
+            ], {
+                duration: Math.random() * 3000 + 2000,
+                easing: 'linear'
+            });
+            
+            animation.onfinish = () => particle.remove();
+        }
+
+        // Create particles periodically
+        setInterval(createParticle, 300);
+
+        // Add keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && e.target.classList.contains('download-btn')) {
+                downloadFile();
+            }
+        });
+
+        // Add loading animation to logo
+        const logoIcon = document.querySelector('.logo-icon-img');
+        logoIcon.addEventListener('mouseenter', () => {
+            logoIcon.style.animation = 'rotate 0.5s ease-in-out';
+        });
+        logoIcon.addEventListener('animationend', () => {
+            logoIcon.style.animation = 'glow-pulse 2s infinite';
+        });
+
+        // Enhanced scroll effects
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const parallax = document.querySelector('body::before');
+            
+            // Parallax effect for background
+            if (parallax) {
+                document.body.style.setProperty('--scroll-offset', scrolled * 0.5 + 'px');
+            }
+            
+            // Header blur effect
+            const header = document.querySelector('header');
+            if (scrolled > 50) {
+                header.style.backdropFilter = 'blur(20px)';
+                header.style.background = 'rgba(10, 10, 10, 0.98)';
+            } else {
+                header.style.backdropFilter = 'blur(10px)';
+                header.style.background = 'rgba(10, 10, 10, 0.95)';
+            }
+        });
+
+        // Console easter egg
+        console.log(`
+        ██████╗ ██╗  ██╗      ██████╗ ██████╗  ██████╗ ██╗    ██╗███████╗███████╗██████╗ 
+        ██╔═████╗╚██╗██╔╝      ██╔══██╗██╔══██╗██╔═══██╗██║    ██║██╔════╝██╔════╝██╔══██╗
+        ██║██╔██║ ╚███╔╝ █████╗██████╔╝██████╔╝██║   ██║██║ █╗ ██║███████╗█████╗  ██████╔╝
+        ████╔╝██║ ██╔██╗ ╚════╝██╔══██╗██╔══██╗██║   ██║██║███╗██║╚════██║██╔══╝  ██╔══██╗
+        ╚██████╔╝██╔╝ ██╗      ██████╔╝██║  ██║╚██████╔╝╚███╔███╔╝███████║███████╗██║  ██║
+         ╚═════╝ ╚═╝  ╚═╝      ╚═════╝ ╚═╝  ╚═╝ ╚═════╝  ╚══╝╚══╝ ╚══════╝╚══════╝╚═╝  ╚═╝
+        
+        Merci d'avoir visité 0x-Browser ! 
+        Navigateur développé avec ❤️ et beaucoup de café ☕
+        `);
+    </script>
+</body>
+</html>
